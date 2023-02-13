@@ -67,6 +67,6 @@ yarn
 yarn dev
 ```
 
-The app should be up and running at http://localhost:3000.
+The app should be up and running at http://localhost:3000
 
 Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=steamship-ai-chatgpt) ([Documentation](https://nextjs.org/docs/deployment)).
