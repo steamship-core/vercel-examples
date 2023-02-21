@@ -22,7 +22,7 @@ Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packag
 ```bash
 npx create-next-app --example https://github.com/steamship-core/vercel-examples/tree/main/ai-chatgpt
 # or
-yarn create next-app --example https://github.com/steamship-core/vercel-examples/tree/main/ai-chatgpt
+yarn create-next-app --example https://github.com/steamship-core/vercel-examples/tree/main/ai-chatgpt
 ```
 
 ### Deploy your Steamship Stack
