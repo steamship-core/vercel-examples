@@ -38,6 +38,7 @@ export default async function handler(
       pkg: packageHandle,
       config: {index_name: dbId, default_chat_session_id: defaultChatSessionId} as Map<string, any>
     })
+    console.log(pkg)
     // Invoke a method on the package defined in steamship/api.py. Full syntax: pkg.invoke("method", {args}, "POST" | "GET")
     // Since we use invokeAsync here, the result will be a task that we can poll. This guarantees the Vercel function
     // can return quickly without having the paid plan.

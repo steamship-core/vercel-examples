@@ -21,18 +21,11 @@ const Layout: FC<LayoutProps> = ({
   children,
 }) => {
   const {query} = useRouter()
-  let {dbId, authorId} = query
+  let {dbId} = query
 
-  let authorIdToBgImage = {
-    "grant_cardone": "https://i.ibb.co/PxNNhV7/Untitled-design-4.png",
-    "naval_ravikant": "https://i.ibb.co/RbQQwhc/Untitled-design-5.png"
-  }
-
-  let bgImage = authorIdToBgImage[authorId as string]
 
   return (
-    <div className="mx-auto h-screen flex flex-col bg-scroll bg-contain bg-no-repeat bg-right-bottom"
-    style={{backgroundImage: "url(" + bgImage + ")"}}>
+    <div className="mx-auto h-screen flex flex-col">
       <Head>
         {title && <title>{`${title} - Steamship + Vercel Examples`}</title>}
         {description && <meta name="description" content={description} />}

@@ -4,7 +4,6 @@ import { type Message, ChatLine, LoadingChatLine } from './ChatLine'
 import { useCookies } from 'react-cookie'
 import { HiOutlineArrowRight, HiOutlineRefresh, HiOutlinePlus } from 'react-icons/hi';
 import LoadingDots from "./LoadingDots";
-import { AuthorDetails } from '../pages';
 
 const COOKIE_NAME = 'ask-my-book-steamship'
 
@@ -62,11 +61,10 @@ const InputMessage = ({ input, setInput, sendMessage, loading }: any) => (
 
 type ChatProps = {
     dbId: string;
-    authorDetails?: AuthorDetails;
 }
 
 export function Chat(props: ChatProps) {
-  const {dbId, authorDetails} = props
+  const {dbId} = props
   
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [input, setInput] = useState('')
@@ -103,6 +101,7 @@ export function Chat(props: ChatProps) {
       setLoading(false);
       console.log(JSON.parse(output))
       const {answer, sources, is_plausible} = JSON.parse(output)
+      console.log(answer, sources, is_plausible)
       setMessages((oldMessages) => [
         ...oldMessages,
         { message: answer.trim(), who: 'bot', sources: sources, isPlausible: is_plausible } as Message
@@ -177,20 +176,12 @@ export function Chat(props: ChatProps) {
       } 
   }
 
-  if (messages.length == 1 && authorDetails && messages == initialMessages){
-    setMessages([
-      {
-        who: 'bot',
-        message: authorDetails.firstMessage || "Hey! 😎",
-      },
-    ])
-  }
 
   return (
     <div>
     <div className="rounded-2xl border-zinc-100  lg:border lg:p-6">
       {messages.map(({ message, who, sources, isPlausible }, index) => (
-        <ChatLine key={index} who={who} message={message} sources={sources} authorDetails={authorDetails} isPlausible={isPlausible} />
+        <ChatLine key={index} who={who} message={message} sources={sources} isPlausible={isPlausible} />
       ))}
 
       {loading && <LoadingChatLine />}

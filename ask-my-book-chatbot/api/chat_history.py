@@ -24,7 +24,6 @@ def _timestamp_tag() -> Tag:
 
 
 class ChatHistory:
-
     def __init__(self, client: Steamship, chat_session_id: Optional[str] = None):
         self.chat_session_id = chat_session_id or "default"
         self.client = client
@@ -47,7 +46,7 @@ class ChatHistory:
             self.client,
             file_id=conversation_file.id,
             text=json.dumps((question, message)),
-            tags=[_timestamp_tag()]
+            tags=[_timestamp_tag()],
         )
 
     def load(self) -> List[Tuple[str, str]]:
@@ -57,7 +56,8 @@ class ChatHistory:
             return []
 
         return [
-            json.loads(block.text) for block in sorted(convo_file.blocks, key=_block_sort_key)
+            json.loads(block.text)
+            for block in sorted(convo_file.blocks, key=_block_sort_key)
         ]
 
     def clear(self) -> None:
@@ -66,7 +66,7 @@ class ChatHistory:
             convo_file.delete()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     client = Steamship()
     ch = ChatHistory(client, chat_session_id="random-chat-history")
     print(ch.load())

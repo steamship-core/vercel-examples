@@ -1,7 +1,7 @@
 {
 	"type": "package",
 	"handle": "ask-my-book-chat-api-test",
-	"version": "0.0.20",
+	"version": "0.0.22",
 	"description": null,
 	"author": "Enias",
 	"entrypoint": "Unused",

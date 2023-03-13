@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 import Balancer from 'react-wrap-balancer'
 import Source from "../components/Source";
-import { AuthorDetails } from '../pages';
 import { HiShieldExclamation } from 'react-icons/hi';
 
 const BalancerWrapper = (props: any) => <Balancer {...props} />
@@ -10,7 +9,6 @@ export type Message = {
   who: 'bot' | 'user' | undefined
   message?: string
   sources?: any
-  authorDetails?: AuthorDetails,
   isPlausible?: boolean,
 }
 
@@ -45,11 +43,12 @@ const convertNewLines = (text: string) =>
     </span>
   ))
 
-export function ChatLine({ who = 'bot', message, sources, authorDetails, isPlausible}: Message) {
+export function ChatLine({ who = 'bot', message, sources, isPlausible}: Message) {
   if (!message) {
     return null
   }
   const formatteMessage = convertNewLines(message)
+  console.log("isPlausible", isPlausible)
   return (
     <div
       className={
@@ -60,24 +59,16 @@ export function ChatLine({ who = 'bot', message, sources, authorDetails, isPlaus
         <div className="float-right mb-5 rounded-lg bg-white px-4 py-5 shadow-lg ring-1 ring-zinc-100 sm:px-6">
           <div className="flex space-x-3">
             <div className="flex-1 gap-4 flex flex-row">
-            
-
-{who == 'bot' && <div className="flex-shrink-0" hidden={authorDetails === undefined}>
-    <img className="w-10 h-10 rounded-full" src={authorDetails?.authorImageUrl} alt=""/>
-    <span className="top-0 left-7 absolute  w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>
-</div>
-}
-
               <div>
               <p className="font-large text-xxl text-gray-900">
                 <a href="#" className="hover:underline">
-                  {who == 'bot' ? authorDetails?.authorName || 'AI' : 'You'}
+                  {who == 'bot' ? 'AI' : 'You'}
                 </a>
               </p>
               {isPlausible === false && (
 
 <div className="flex flex-row items-center text-orange-600 mb-6">
-<HiShieldExclamation className="mr-2 h-5 w-5" />This answer might be incorrect given the sources.
+<HiShieldExclamation className="mr-2 h-5 w-5" />The AI believes it may have hallucinated this answer. Please make sure to verify with the original sources.
 </div>
 
 
