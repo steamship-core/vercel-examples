@@ -18,24 +18,24 @@ BOOKS_OR_BOOK_FOLDERS = [
 ]
 
 
-def index_book(
-    book: Path, doc_index: SteamshipVectorStore, loaded_books: Optional[Set[str]] = None
+def index_document(
+        document: Path, index: SteamshipVectorStore, loaded_documents: Optional[Set[str]] = None
 ):
-    loaded_books = loaded_books or set()
+    loaded_documents = loaded_documents or set()
 
-    if book.name in loaded_books:
+    if document.name in loaded_documents:
         if click.confirm(
-            f'The book "{book.name}" is already indexed, do you want me to skip it?',
-            default=True,
+                f'The book "{document.name}" is already indexed, do you want me to skip it?',
+                default=True,
         ):
             return
 
-    loader = PagedPDFSplitter(str(book.resolve()))
+    loader = PagedPDFSplitter(str(document.resolve()))
     pages = loader.load_and_split()
 
-    doc_index.add_texts(
+    index.add_texts(
         texts=[re.sub("\u0000", "", page.page_content) for page in pages],
-        metadatas=[{**page.metadata, "source": book.name} for page in pages],
+        metadatas=[{**page.metadata, "source": document.name} for page in pages],
     )
 
 
@@ -46,24 +46,29 @@ if __name__ == "__main__":
         client=client, index_name=INDEX_NAME, embedding="text-embedding-ada-002"
     )
 
-    books = set(
+    documents = set(
         json.loads(item.metadata)["source"]
         for item in doc_index.index.index.list_items().items
     )
 
-    if len(books) > 0:
+    if len(documents) > 0:
         print(
-            "The index already contains the following books: \n* " + "\n* ".join(books)
+            "The index already contains the following books: \n* " + "\n* ".join(documents)
         )
         if click.confirm("Do you want to reset your index?", default=True):
             print("Resetting your index, this will take a while ⏳")
             doc_index.index.reset()
 
     for book in BOOKS_OR_BOOK_FOLDERS:
-        book_path = Path(book)
+        data_path = Path(book)
 
-        if book_path.is_dir():
-            for folder in book_path.iterdir():
-                index_book(book_path, doc_index, books)
+        if data_path.is_dir():
+            for child_data_path in data_path.iterdir():
+                index_document(child_data_path, doc_index, documents)
         else:
-            index_book(book_path, doc_index, books)
+            index_document(data_path, doc_index, documents)
+
+    package_instance = client.use("ask-my-book-chat-api", config={"index_name": INDEX_NAME}, version="0.0.22")
+    print("Your documents are successfully added to the index")
+    print("You can query your documents on this endpoint: ")
+    print(package_instance.invocation_url)
