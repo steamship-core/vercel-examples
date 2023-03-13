@@ -1,20 +1,18 @@
 import json
 from typing import Type, Optional, Dict, Any, List
-from uuid import uuid1
 
 import langchain
 from langchain.chains import ChatVectorDBChain
 from langchain.chains.llm import LLMChain
 from langchain.chains.question_answering import load_qa_chain
-from steamship import Steamship
 from steamship.invocable import Config
 from steamship.invocable import PackageService, post, get
 from steamship_langchain import OpenAI
 from steamship_langchain.vectorstores import SteamshipVectorStore
 
+from chat_history import ChatHistory
 from constants import DEBUG
 from fact_checker import FactChecker
-from chat_history import ChatHistory
 from prompts import ANSWER_QUESTION_PROMPT, CONDENSE_QUESTION_PROMPT
 
 langchain.llm_cache = None
@@ -50,7 +48,7 @@ class AskMyBook(PackageService):
     def answer(
         self, question: str, chat_session_id: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Answer a given question using the a collection of source documents."""
+        """Answer a given question using a collection of source documents."""
         chat_session_id = chat_session_id or self.config.default_chat_session_id
         chat_history = ChatHistory(self.client, chat_session_id)
 
@@ -104,22 +102,3 @@ class AskMyBook(PackageService):
             return_source_documents=True,
             top_k_docs_for_context=2,
         )
-
-
-if __name__ == "__main__":
-    index_name = "naval_ravikant"
-    package = AskMyBook(
-        client=Steamship(workspace=index_name), config={"index_name": index_name}
-    )
-
-    for question in [
-        "Are you a trump fan?",
-        "What makes a startup successful?",
-        "This is a test",
-        "how can I be happy?",
-        "Who is the author of this book?",
-    ][:1]:
-        print("question", question)
-        chat_session_id = str(uuid1())
-        answer = package.answer(question=question, chat_session_id=chat_session_id)
-        print(answer["is_plausible"])

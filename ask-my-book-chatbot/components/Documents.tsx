@@ -2,25 +2,20 @@ import { ListGroup, Alert} from "flowbite-react";
 import { useState } from "react";
 import {HiOutlineExclamationCircle} from "react-icons/hi"
 
-export default function Documents({ dbId }: { dbId: string }) {
+export default function Documents({ baseUrl }: { baseUrl: string }) {
 
   const [documents, setDocuments] = useState<String[]|null>(null);
 
   const fetchDocuments = async () => {
-    const response = await fetch('/api/documents', {
-      method: "POST",
+    const response = await fetch(baseUrl + "/documents", {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-        body: JSON.stringify({
-          dbId: dbId,
-        }),
-
     });
 
-    const {documents} = await response.json();
+    const documents = await response.json();
     setDocuments(documents)
-
   };
 
   if (!documents) {

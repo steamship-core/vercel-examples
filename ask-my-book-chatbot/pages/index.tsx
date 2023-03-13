@@ -7,16 +7,25 @@ import { useState } from "react";
 function Home() {
   const {query, isReady} = useRouter()
 
-  let {dbId} = query
-  dbId = dbId as string || process.env.NEXT_PUBLIC_INDEX_NAME as string;
 
+  const makeBaseUrl = (userHandle?: string, workspaceHandle?: string, packageInstanceHandle?: string) => {
+    if (userHandle && workspaceHandle && packageInstanceHandle){
+      return `https://${userHandle}.steamship.run/${workspaceHandle}/${packageInstanceHandle}`
+    } else {
+      return null
+    }
+  }
 
+  let {userHandle, workspaceHandle, packageInstanceHandle} = query
+  const baseUrl = makeBaseUrl(userHandle as string, workspaceHandle as string, packageInstanceHandle as string) || process.env.NEXT_PUBLIC_BASE_URL as string;
   const errorMessage = (
         <div className="rounded-md bg-red-50 p-4">
             <div className="flex">
               <div className="ml-3">
                 <h3 className="text-sm font-medium text-red-800">Error</h3>
-                <p>Unknown index selected.</p>
+                <p>Front-end not connected.</p>
+                <br/>
+                <p>If this issue persists, please ping us on <a href="https://steamship.com/discord" className="font-semibold text-gray-900 underline dark:text-white decoration-sky-500">Discord</a>. We&apos;re happy to help. </p>
               </div>
             </div>
           </div>
@@ -26,13 +35,13 @@ function Home() {
     <Page className="flex flex-col gap-12 ">
       <section className="flex flex-col gap-6 " >
         <Text variant="h1">Chat with your documents 🧠</Text>
-        {isReady ? <Documents dbId={dbId}/>: <div/>}
+        {isReady ? <Documents baseUrl={baseUrl}/>: <div/>}
       </section>
 
       <section className="flex flex-col gap-3">
         <div className="lg">
-            { typeof dbId == "undefined" && errorMessage}
-             <Chat dbId={dbId as string}/>
+            { typeof baseUrl == "undefined" && errorMessage}
+             <Chat baseUrl={baseUrl}/>
         </div>
       </section>
     </Page>

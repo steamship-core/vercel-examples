@@ -59,13 +59,7 @@ const InputMessage = ({ input, setInput, sendMessage, loading }: any) => (
   </div>
 )
 
-type ChatProps = {
-    dbId: string;
-}
-
-export function Chat(props: ChatProps) {
-  const {dbId} = props
-  
+export function Chat({ baseUrl }: { baseUrl: string }) {
   const [messages, setMessages] = useState<Message[]>(initialMessages)
   const [input, setInput] = useState('')
   const [chatSessionId, setChatSessionId] = useState(Math.random().toString(36).substring(7))
@@ -80,43 +74,6 @@ export function Chat(props: ChatProps) {
 
     }
   }, [cookie, setCookie])
-
-    const pollMessage = async (taskId: string, workspace: string) => {
-    console.log("Polling", taskId, workspace)
-    const response = await fetch('/api/check_job', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json'},
-      body: JSON.stringify({taskId, workspace})
-    })
-
-    if (!response.ok) {
-      setLoading(false);
-      setError(response.statusText);
-      return;
-    }
-
-    const {state, statusMessage, output} = await response.json()
-
-    if (state == 'succeeded') {
-      setLoading(false);
-      console.log(JSON.parse(output))
-      const {answer, sources, is_plausible} = JSON.parse(output)
-      console.log(answer, sources, is_plausible)
-      setMessages((oldMessages) => [
-        ...oldMessages,
-        { message: answer.trim(), who: 'bot', sources: sources, isPlausible: is_plausible } as Message
-      ])
-    } else if (state == 'failed') {
-      setLoading(false);
-      setError(statusMessage);
-      return;
-    } else if (state == 'running') {
-      setTimeout(async () => {
-        pollMessage(taskId, workspace)
-      }, 300);
-    }
-  }
-
 
   const resetChatSessionId = () => {
     setChatSessionId(Math.random().toString(36).substring(7))
@@ -134,7 +91,6 @@ export function Chat(props: ChatProps) {
       offset = 1
     }
     const {message, who} = messages[messages.length - 1 - offset]
-    console.log("sending", message, who)
     sendMessage(message as string, messages.slice(0,messages.length-1 - offset))
   }
 
@@ -148,16 +104,14 @@ export function Chat(props: ChatProps) {
     ]
     setMessages(newMessages)
 
-    const response = await fetch('/api/submit_job', {
+    const response = await fetch(baseUrl + '/answer', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message: message, 
-        chatSessionId: chatSessionId,
-        cookie: cookie[COOKIE_NAME],
-        dbId: dbId,
+        question: message, 
+        chat_session_id: chatSessionId,
       }),
       })
     if (!response.ok) {
@@ -166,14 +120,17 @@ export function Chat(props: ChatProps) {
       return;
     }
 
-    const {taskId, workspace, error} = await response.json()
+    const {answer, sources, is_plausible} = await response.json()
+    setLoading(false);
 
     if (error) {
-      setLoading(false);
       setError(error)
-      } else{
-        pollMessage(taskId, workspace)
-      } 
+    } else {
+        setMessages((oldMessages) => [
+          ...oldMessages,
+          { message: answer.trim(), who: 'bot', sources: sources, isPlausible: is_plausible } as Message
+        ])
+    } 
   }
 
 

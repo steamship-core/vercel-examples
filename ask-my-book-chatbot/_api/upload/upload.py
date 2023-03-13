@@ -19,7 +19,9 @@ BOOKS_OR_BOOK_FOLDERS = [
 
 
 def index_document(
-        document: Path, index: SteamshipVectorStore, loaded_documents: Optional[Set[str]] = None
+        document: Path,
+        index: SteamshipVectorStore,
+        loaded_documents: Optional[Set[str]] = None,
 ):
     loaded_documents = loaded_documents or set()
 
@@ -53,7 +55,8 @@ if __name__ == "__main__":
 
     if len(documents) > 0:
         print(
-            "The index already contains the following books: \n* " + "\n* ".join(documents)
+            "The index already contains the following books: \n* "
+            + "\n* ".join(documents)
         )
         if click.confirm("Do you want to reset your index?", default=True):
             print("Resetting your index, this will take a while ⏳")
@@ -68,7 +71,11 @@ if __name__ == "__main__":
         else:
             index_document(data_path, doc_index, documents)
 
-    package_instance = client.use("ask-my-book-chat-api", config={"index_name": INDEX_NAME}, version="0.0.22")
+    package_instance = client.use(
+        "ask-my-book-chat-api", config={"index_name": INDEX_NAME}, version="0.0.22"
+    )
     print("Your documents are successfully added to the index")
     print("You can query your documents on this endpoint: ")
     print(package_instance.invocation_url)
+
+

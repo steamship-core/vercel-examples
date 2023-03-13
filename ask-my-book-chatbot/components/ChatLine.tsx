@@ -48,7 +48,6 @@ export function ChatLine({ who = 'bot', message, sources, isPlausible}: Message)
     return null
   }
   const formatteMessage = convertNewLines(message)
-  console.log("isPlausible", isPlausible)
   return (
     <div
       className={

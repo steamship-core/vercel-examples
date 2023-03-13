@@ -3,7 +3,6 @@ import Head from 'next/head.js'
 import Nav, { NavProps } from './Nav'
 import Logo from './Steamship'
 import { ComponentType } from 'react'
-import { useRouter } from 'next/router'
 
 export interface LayoutProps extends NavProps {
   children?: ReactNode
@@ -20,10 +19,6 @@ const Layout: FC<LayoutProps> = ({
   deployButton,
   children,
 }) => {
-  const {query} = useRouter()
-  let {dbId} = query
-
-
   return (
     <div className="mx-auto h-screen flex flex-col">
       <Head>
